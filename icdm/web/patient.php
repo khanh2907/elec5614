@@ -21,6 +21,68 @@ $patient_id = $_GET['id'];
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
+    <!-- Core Scripts - Include with every page -->
+    <script src="js/jquery-1.10.2.js"></script>
+    <script src="js/highcharts.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+
+    <!-- SB Admin Scripts - Include with every page -->
+    <script src="js/sb-admin.js"></script>
+
+    <script type="text/javascript">
+    $(function () {
+
+        var url = <?php echo "'get/heartrate.php?patient_id=",$patient_id, "'"; ?>
+
+        var options = {
+            title: {
+                text: 'Heart Rate (24 hours)'
+            },
+            chart: {
+                renderTo: 'heartrate-graph',
+                type: 'line'
+            },
+            xAxis: {
+                type: 'datetime',
+                title: {
+                    text: 'Date'
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'BPM'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{}]
+        };
+
+        $.getJSON(url, function(data) {
+
+            var dataList = [];
+
+            data.forEach(function(entry) {
+                heartrateInstance = [new Date(entry.time).getTime()/1000, parseFloat(entry.heartrate)];
+                dataList.push(heartrateInstance);
+
+            })
+
+            console.log(dataList);
+
+            options.series[0].data = dataList;
+            var chart = new Highcharts.Chart(options);
+        });
+
+        
+    });
+        </script>
+
 </head>
 
 <body>
@@ -64,7 +126,7 @@ $patient_id = $_GET['id'];
                         <li>
                             <a href="."><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="#"><i class="fa fa-users fa-fw"></i> Patients<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <?php
@@ -74,7 +136,14 @@ $patient_id = $_GET['id'];
                                 	foreach($patients as $patient) {
                                         echo '<li>';
                                         echo '<a href=patient.php?id=', $patient[id],'>';
-                                        echo $patient[name], ' ', $patient[surname];
+                                        if ($patient[id] == $patient_id) {
+                                            echo '<strong>';
+                                            echo $patient[name], ' ', $patient[surname];
+                                            echo '</strong>';
+                                        }
+                                        else {
+                                            echo $patient[name], ' ', $patient[surname];    
+                                        }
                                         echo '</a>';
                                         echo '</li>';
                                     }
@@ -118,7 +187,30 @@ $patient_id = $_GET['id'];
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <table class="table">
-                            	<!-- insert activity here -->
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Activity</th>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>some date</td>
+                                    <td>Emergency</td>
+                                    <td>In Progress</td>
+                                    <td>Failed to defribilate.</td>
+                                </tr>
+                                <tr>
+                                    <td>some date</td>
+                                    <td>Defribillation</td>
+                                    <td>Failed</td>
+                                    <td>Heart rate was too low. Failed to adjust heartrate.</td>
+                                </tr>
+                                <tr>
+                                    <td>some date</td>
+                                    <td>Defribillation</td>
+                                    <td>Complete</td>
+                                    <td>Heart rate was too high.</td>
+                                </tr>
                             </table>
                         </div>
                         <!-- /.panel-body -->
@@ -129,13 +221,11 @@ $patient_id = $_GET['id'];
                 <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-heart fa-fw"></i> Current Heartrate
+                            <i class="fa fa-heart fa-fw"></i> Current Heart Rate
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <table class="table">
-                            	<!-- insert status table here -->
-                            </table>
+                            <h1>65.1 bpm</h1>
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -148,13 +238,11 @@ $patient_id = $_GET['id'];
                 <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Heartrate Graph
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Heart Rate Graph
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <table class="table">
-                                <!-- insert activity here -->
-                            </table>
+                            <div id="heartrate-graph" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -169,7 +257,34 @@ $patient_id = $_GET['id'];
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <table class="table">
-                                <!-- insert status table here -->
+                                <tr>
+                                    <td>Average Heartrate (5 mins) </td>
+                                    <td> 66.6 </td>
+                                </tr>
+                                <tr>
+                                    <td>Average Heartrate (15 mins) </td>
+                                    <td> 66.6 </td>
+                                </tr>
+                                <tr>
+                                    <td>Average Heartrate (30 mins) </td>
+                                    <td> 66.6 </td>
+                                </tr>
+                                <tr>
+                                    <td>Average Heartrate (1 hour) </td>
+                                    <td> 66.6 </td>
+                                </tr>
+                                <tr>
+                                    <td>Average Heartrate (1.5 hours) </td>
+                                    <td> 66.6 </td>
+                                </tr>
+                                <tr>
+                                    <td>Average Heartrate (24 hours) </td>
+                                    <td> 66.6 </td>
+                                </tr>
+                                <tr>
+                                    <td>Number of Defibrillations</td>
+                                    <td> 4 </td>
+                                </tr>
                             </table>
                         </div>
                         <!-- /.panel-body -->
@@ -185,17 +300,7 @@ $patient_id = $_GET['id'];
     </div>
     <!-- /#wrapper -->
 
-    <!-- Core Scripts - Include with every page -->
-    <script src="js/jquery-1.10.2.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
-
-    <!-- Page-Level Plugin Scripts - Dashboard -->
-    <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
-    <script src="js/plugins/morris/morris.js"></script>
-
-    <!-- SB Admin Scripts - Include with every page -->
-    <script src="js/sb-admin.js"></script>
+    
 
 </body>
 
