@@ -2,6 +2,7 @@
 require_once('include/common.php');
 require_once('include/sql.php');
 startValidSession();
+$patient_id = $_GET['id'];
 ?>
 
 <html>
@@ -25,6 +26,7 @@ startValidSession();
 <body>
 
     <div id="wrapper">
+
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
@@ -70,15 +72,15 @@ startValidSession();
                                 	$doctor_id = $_SESSION['doctor_id'][0]['id'];
                                 	$patients = getPatientsOf($doctor_id);
                                 	foreach($patients as $patient) {
-                                		echo '<li>';
-                                		echo '<a href=patient.php?id=', $patient[id],'>';
-                                		echo $patient[name], ' ', $patient[surname];
-                                		echo '</a>';
-                                		echo '</li>';
-                                	}
+                                        echo '<li>';
+                                        echo '<a href=patient.php?id=', $patient[id],'>';
+                                        echo $patient[name], ' ', $patient[surname];
+                                        echo '</a>';
+                                        echo '</li>';
+                                    }
                                 }
                                 catch (Exception $e) {
-                                	echo 'Something went wrong here.';
+                                    echo 'Something went wrong here.';
                                 }
 
                                 ?>
@@ -97,7 +99,12 @@ startValidSession();
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h3 class="page-header">Dashboard</h3>
+                    <h3 class="page-header">
+                        <?php
+                        $patientDetails = getPatientDetails($patient_id);
+                        echo $patientDetails[0]['name'], ' ', $patientDetails[0]['surname'];
+                        ?>
+                    </h3>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -106,7 +113,7 @@ startValidSession();
                 <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-rss fa-fw"></i> Lastest Activity
+                            <i class="fa fa-rss fa-fw"></i> Activity Log
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -122,12 +129,47 @@ startValidSession();
                 <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-heart fa-fw"></i> Average Heartrate (24 hours)
+                            <i class="fa fa-heart fa-fw"></i> Current Heartrate
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <table class="table">
                             	<!-- insert status table here -->
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-4 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Heartrate Graph
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table class="table">
+                                <!-- insert activity here -->
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    
+                </div>
+                <!-- /.col-lg-8 -->
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-book fa-fw"></i> Statistics
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table class="table">
+                                <!-- insert status table here -->
                             </table>
                         </div>
                         <!-- /.panel-body -->

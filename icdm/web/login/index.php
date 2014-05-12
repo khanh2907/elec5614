@@ -14,6 +14,7 @@ function log_in($name, $pass) {
     if ($is_valid) {
         $_SESSION['logged_in'] = true;
         $_SESSION['user'] = $name;
+        $_SESSION['doctor_id'] = getDoctorId($name);
     }
     return $is_valid;
 }

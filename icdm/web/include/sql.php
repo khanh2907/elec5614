@@ -41,6 +41,20 @@ function checkLogin($name,$pass) {
     return ($result == 1);
 }
 
+function getDoctorId($name) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT id FROM doctor WHERE username = :name');
+        $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetchColumn();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting doctor id: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
 function postHeartRate($patientId, $heartRate) {
 	$db = connect();
 	try {
@@ -90,6 +104,34 @@ function getPatients() {
         $stmt->closeCursor();
     } catch (PDOException $e) { 
         print "Error getting doctors: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
+function getPatientDetails($patiendId) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT name, surname FROM patient WHERE id = :patient_id');
+        $stmt->bindValue(':patient_id', $patiendId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting patients: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
+function getPatientsOf($doctorId) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT name, surname, id FROM patient WHERE doctor_id = :doctor_id');
+        $stmt->bindValue(':doctor_id', $doctorId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting patients: " . $e->getMessage(); 
     }
     return $result;
 }
