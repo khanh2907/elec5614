@@ -1,8 +1,6 @@
 <?php
 error_reporting(E_ALL);
 
-print_r(getHeartRateOf(1));
-
 function connect($file = 'config.ini') {
 	// read database seetings from config file
     if ( !$settings = parse_ini_file($file, TRUE) ) 
@@ -27,6 +25,22 @@ function connect($file = 'config.ini') {
     return $dbh;
 }
 
+function checkLogin($name,$pass) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT (password = MD5(:pass)) FROM doctor WHERE username = :name');
+        $stmt->bindValue(':name', $name, PDO::PARAM_INT);
+        $stmt->bindValue(':pass', $pass, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchColumn();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error checking login: " . $e->getMessage(); 
+        return FALSE;
+    }
+    return ($result == 1);
+}
+
 function postHeartRate($patientId, $heartRate) {
 	$db = connect();
 	try {
@@ -36,7 +50,7 @@ function postHeartRate($patientId, $heartRate) {
 		$stmt->execute();
         $stmt->closeCursor();        
     } catch (PDOException $e) { 
-        print "Error checking login: " . $e->getMessage(); 
+        print "Error recording heart rate: " . $e->getMessage(); 
     }
 }
 
@@ -49,12 +63,12 @@ function getHeartRateOf($patientId) {
         $result = $stmt->fetchAll();
         $stmt->closeCursor();
     } catch (PDOException $e) { 
-        print "Error checking login: " . $e->getMessage(); 
+        print "Error getting heart rate: " . $e->getMessage(); 
     }
     return $result;
 }
 
-function getDoctors(){
+function getDoctors() {
     $db = connect();
     try {
         $stmt = $db->prepare('SELECT * FROM doctor');
@@ -62,7 +76,20 @@ function getDoctors(){
         $result = $stmt->fetchAll();
         $stmt->closeCursor();
     } catch (PDOException $e) { 
-        print "Error checking login: " . $e->getMessage(); 
+        print "Error getting doctors: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
+function getPatients() {
+	$db = connect();
+    try {
+        $stmt = $db->prepare('SELECT * FROM patient');
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting doctors: " . $e->getMessage(); 
     }
     return $result;
 }
