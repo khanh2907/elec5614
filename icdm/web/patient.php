@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 require_once('include/common.php');
 require_once('include/sql.php');
 startValidSession();
@@ -120,6 +121,22 @@ $patient_id = $_GET['id'];
             })
         }, 500);
         // Graph JS END
+
+        // Statistics START
+        var statsUrl = <?php echo "'get/statistics.php?patient_id=",$patient_id, "'"; ?>;
+        setInterval(function(){
+            $.getJSON(statsUrl, function(data) {
+                $('#stats-avg-5').html(data.fiveMinutes);
+                $('#stats-avg-15').html(data.fifteenMinutes);
+                $('#stats-avg-30').html(data.thirtyMinutes);
+                $('#stats-avg-1hr').html(data.oneHour);
+                $('#stats-avg-1-5hr').html(data.oneAndHalfHour);
+                $('#stats-avg-24hr').html(data.twentyFourHours);
+            })
+        }, 1000);
+
+        // Statistics END
+
 
     });
         </script>
@@ -307,31 +324,55 @@ $patient_id = $_GET['id'];
                             <table class="table">
                                 <tr>
                                     <td>Average Heartrate (5 mins) </td>
-                                    <td> 66.6 </td>
+                                    <td id="stats-avg-5">
+                                        <?php
+                                        echo getAverageHeartRateByMinutes($patient_id, 5);
+                                        ?>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Average Heartrate (15 mins) </td>
-                                    <td> 66.6 </td>
+                                    <td id="stats-avg-15">
+                                        <?php
+                                        echo getAverageHeartRateByMinutes($patient_id, 15);
+                                        ?>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Average Heartrate (30 mins) </td>
-                                    <td> 66.6 </td>
+                                    <td id="stats-avg-30">
+                                        <?php
+                                        echo getAverageHeartRateByMinutes($patient_id, 30);
+                                        ?>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Average Heartrate (1 hour) </td>
-                                    <td> 66.6 </td>
+                                    <td id="stats-avg-1hr">
+                                        <?php
+                                        echo getAverageHeartRateByHours($patient_id, 1);
+                                        ?>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Average Heartrate (1.5 hours) </td>
-                                    <td> 66.6 </td>
+                                    <td id="stats-avg-1-5hr">
+                                        <?php
+                                        echo getAverageHeartRateByHours($patient_id, 1.5);
+                                        ?>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Average Heartrate (24 hours) </td>
-                                    <td> 66.6 </td>
+                                    <td id="stats-avg-24hr">
+                                        <?php
+                                        echo getAverageHeartRateByHours($patient_id, 24);
+                                        ?>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Number of Defibrillations</td>
-                                    <td> 4 </td>
+                                    <td id="stats-def"> 4 </td>
                                 </tr>
                             </table>
                         </div>

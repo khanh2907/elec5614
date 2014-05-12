@@ -85,7 +85,7 @@ function getHeartRateOf($patientId) {
 function getHeartRateHours($patientId, $hours) {
     $db = connect();
     try {
-        $stmt = $db->prepare('SELECT heartrate, time FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :hours HOUR');
+        $stmt = $db->prepare('SELECT heartrate FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :hours HOUR');
         $stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
         $stmt->bindValue(':hours', $hours, PDO::PARAM_INT);
         $stmt->execute();
@@ -100,7 +100,7 @@ function getHeartRateHours($patientId, $hours) {
 function getHeartRateMinutes($patientId, $minutes) {
     $db = connect();
     try {
-        $stmt = $db->prepare('SELECT heartrate, time FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :minutes MINUTE');
+        $stmt = $db->prepare('SELECT heartrate FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :minutes MINUTE');
         $stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
         $stmt->bindValue(':minutes', $minutes, PDO::PARAM_INT);
         $stmt->execute();
@@ -110,6 +110,36 @@ function getHeartRateMinutes($patientId, $minutes) {
         print "Error getting heart rate: " . $e->getMessage(); 
     }
     return $result;
+}
+
+function getAverageHeartRateByMinutes($id, $minutes) {
+    $hrList = getHeartRateMinutes($id, $minutes);
+
+    if (sizeof($hrList) == 0) {
+        return '-';
+    }
+
+    $total = 0;
+    foreach ($hrList as $hr) {
+        $total += $hr['heartrate'];
+    }
+
+    return $total / sizeof($hrList);
+}
+
+function getAverageHeartRateByHours($id, $hours) {
+    $hrList = getHeartRateHours($id, $hours);
+
+    if (sizeof($hrList) == 0) {
+        return '-';
+    }
+
+    $total = 0;
+    foreach ($hrList as $hr) {
+        $total += $hr['heartrate'];
+    }
+
+    return $total / sizeof($hrList);
 }
 
 function getCurrentHeartRateOf($patientId) {
