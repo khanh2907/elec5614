@@ -33,7 +33,28 @@ $patient_id = $_GET['id'];
     <script type="text/javascript">
     $(function () {
 
-        var url = <?php echo "'get/heartrate.php?patient_id=",$patient_id, "'"; ?>
+        // Current HR START
+
+        var currentHRUrl = <?php echo "'get/heartrate.php?type=current&patient_id=",$patient_id, "'"; ?>
+
+        setInterval(function(){
+            $.getJSON(currentHRUrl, function(data) {
+                var newHR = data[0].heartrate;
+                $('#current-hr').html(newHR + " bpm");
+            })
+        }, 1000);
+
+        // Current HR END
+
+        // Graph JS START
+        var chartUrl = <?php echo "'get/heartrate.php?type=graph&patient_id=",$patient_id, "'"; ?>
+
+        Highcharts.setOptions({
+            global: {
+                useUTC: false    
+            }
+            
+        })
 
         var options = {
             title: {
@@ -46,7 +67,12 @@ $patient_id = $_GET['id'];
             xAxis: {
                 type: 'datetime',
                 title: {
-                    text: 'Date'
+                    text: 'Time'
+                }
+            },
+            plotOptions: {
+                line: {
+                    animation: false
                 }
             },
             yAxis: {
@@ -63,23 +89,38 @@ $patient_id = $_GET['id'];
             series: [{}]
         };
 
-        $.getJSON(url, function(data) {
+        $.getJSON(chartUrl, function(data) {
 
             var dataList = [];
 
             data.forEach(function(entry) {
-                heartrateInstance = [new Date(entry.time).getTime()/1000, parseFloat(entry.heartrate)];
+                heartrateInstance = [new Date(entry.time).getTime(), parseFloat(entry.heartrate)];
                 dataList.push(heartrateInstance);
+            })        
 
-            })
-
-            console.log(dataList);
+        
 
             options.series[0].data = dataList;
             var chart = new Highcharts.Chart(options);
         });
-
         
+        setInterval(function(){
+            var dataList = [];
+            $.getJSON(chartUrl, function(data) {
+
+                if (new Date(data[data.length-1].time).getTime() != options.series[0].data[options.series[0].data.length-1][0]) {
+                    data.forEach(function(entry) {
+                        heartrateInstance = [new Date(entry.time).getTime(), parseFloat(entry.heartrate)];
+                        dataList.push(heartrateInstance);
+                    })   
+
+                    options.series[0].data = dataList;
+                    var chart = new Highcharts.Chart(options);
+                }
+            })
+        }, 500);
+        // Graph JS END
+
     });
         </script>
 
@@ -225,7 +266,14 @@ $patient_id = $_GET['id'];
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <h1>65.1 bpm</h1>
+                            <span>
+                                <h1 id="current-hr">
+                                    <?php
+                                    $currentHR = getCurrentHeartRateOf($patient_id);
+                                    echo $currentHR[0]['heartrate'];
+                                    ?>
+                                 bpm</h1> 
+                            </span>
                         </div>
                         <!-- /.panel-body -->
                     </div>

@@ -82,6 +82,51 @@ function getHeartRateOf($patientId) {
     return $result;
 }
 
+function getHeartRateHours($patientId, $hours) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT heartrate, time FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :hours HOUR');
+        $stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
+        $stmt->bindValue(':hours', $hours, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting heart rate: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
+function getHeartRateMinutes($patientId, $minutes) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT heartrate, time FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :minutes MINUTE');
+        $stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
+        $stmt->bindValue(':minutes', $minutes, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting heart rate: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
+function getCurrentHeartRateOf($patientId) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT heartrate FROM heartrate WHERE patient_id = :patient_id ORDER BY time DESC LIMIT 1' );
+        $stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting heart rate: " . $e->getMessage(); 
+    }
+    return $result;
+    
+}
+
 function getDoctors() {
     $db = connect();
     try {
