@@ -55,13 +55,67 @@ function getDoctorId($name) {
     return $result;
 }
 
-function postHeartRate($patientId, $heartRate) {
+function getDoctors() {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT * FROM doctor');
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting doctors: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
+function getPatients() {
 	$db = connect();
-	try {
-		$stmt = $db->prepare('INSERT INTO heartrate(patient_id, heartrate) VALUES (:patient_id, :heartrate)');
-		$stmt->bindValue(':heartrate', $heartRate, PDO::PARAM_STR);
-		$stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
-		$stmt->execute();
+    try {
+        $stmt = $db->prepare('SELECT * FROM patient');
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting doctors: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
+function getPatientDetails($patiendId) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT name, surname FROM patient WHERE id = :patient_id');
+        $stmt->bindValue(':patient_id', $patiendId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting patients: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
+function getPatientsOf($doctorId) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT name, surname, id FROM patient WHERE doctor_id = :doctor_id');
+        $stmt->bindValue(':doctor_id', $doctorId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting patients: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
+function postHeartRate($patientId, $heartRate) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('INSERT INTO heartrate(patient_id, heartrate) VALUES (:patient_id, :heartrate)');
+        $stmt->bindValue(':heartrate', $heartRate, PDO::PARAM_STR);
+        $stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
+        $stmt->execute();
         $stmt->closeCursor();        
     } catch (PDOException $e) { 
         print "Error recording heart rate: " . $e->getMessage(); 
@@ -69,7 +123,7 @@ function postHeartRate($patientId, $heartRate) {
 }
 
 function getHeartRateOf($patientId) {
-	$db = connect();
+    $db = connect();
     try {
         $stmt = $db->prepare('SELECT heartrate, time FROM heartrate WHERE patient_id = :patient_id');
         $stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
@@ -157,58 +211,62 @@ function getCurrentHeartRateOf($patientId) {
     
 }
 
-function getDoctors() {
+function newJob($patient_id, $type, $description) {
     $db = connect();
     try {
-        $stmt = $db->prepare('SELECT * FROM doctor');
+        $stmt = $db->prepare('INSERT INTO job(patient_id, type, status, start_time, description) 
+            VALUES (:patient_id, :type, "STARTED", CURRENT_TIMESTAMP, :description)');
+        $stmt->bindValue(':type', $type, PDO::PARAM_STR);
+        $stmt->bindValue(':patient_id', $patient_id, PDO::PARAM_INT);
+        $stmt->bindValue(':description', $description, PDO::PARAM_STR);
         $stmt->execute();
-        $result = $stmt->fetchAll();
-        $stmt->closeCursor();
+        $stmt->closeCursor();        
+
+        $stmt2 = $db->prepare('SELECT MAX(id) FROM job WHERE patient_id= :patient_id LIMIT 1');
+        $stmt2->bindValue(':patient_id', $patient_id, PDO::PARAM_INT);
+        $stmt2->execute();
+        $result = $stmt2->fetchAll();
+        $stmt2->closeCursor();   
     } catch (PDOException $e) { 
-        print "Error getting doctors: " . $e->getMessage(); 
+        print "Error creating new job: " . $e->getMessage(); 
     }
     return $result;
 }
 
-function getPatients() {
-	$db = connect();
-    try {
-        $stmt = $db->prepare('SELECT * FROM patient');
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        $stmt->closeCursor();
-    } catch (PDOException $e) { 
-        print "Error getting doctors: " . $e->getMessage(); 
-    }
-    return $result;
-}
-
-function getPatientDetails($patiendId) {
+function updateJob($job_id, $status, $description, $completed){
     $db = connect();
-    try {
-        $stmt = $db->prepare('SELECT name, surname FROM patient WHERE id = :patient_id');
-        $stmt->bindValue(':patient_id', $patiendId, PDO::PARAM_INT);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        $stmt->closeCursor();
-    } catch (PDOException $e) { 
-        print "Error getting patients: " . $e->getMessage(); 
+    if ($status != NULL) {
+        try {
+            $stmt = $db->prepare('UPDATE job SET status=:status WHERE id=:job_id');
+            $stmt->bindValue(':job_id', $job_id, PDO::PARAM_INT);
+            $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+            $stmt->execute();
+            $stmt->closeCursor();
+        } catch (PDOException $e) { 
+            print "Error updating job: " . $e->getMessage(); 
+        }
     }
-    return $result;
-}
-
-function getPatientsOf($doctorId) {
-    $db = connect();
-    try {
-        $stmt = $db->prepare('SELECT name, surname, id FROM patient WHERE doctor_id = :doctor_id');
-        $stmt->bindValue(':doctor_id', $doctorId, PDO::PARAM_INT);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        $stmt->closeCursor();
-    } catch (PDOException $e) { 
-        print "Error getting patients: " . $e->getMessage(); 
+    elseif ($description != NULL) {
+        try {
+            $stmt = $db->prepare('UPDATE job SET description=CONCAT(description, :description) WHERE id=:job_id');
+            $stmt->bindValue(':job_id', $job_id, PDO::PARAM_INT);
+            $stmt->bindValue(':description', $description, PDO::PARAM_STR);
+            $stmt->execute();
+            $stmt->closeCursor();
+        } catch (PDOException $e) { 
+            print "Error updating job: " . $e->getMessage(); 
+        }
     }
-    return $result;
+    elseif ($completed) {
+        try {
+            $stmt = $db->prepare("UPDATE job SET end_time=CURRENT_TIMESTAMP, status='COMPLETE' WHERE id=:job_id");
+            $stmt->bindValue(':job_id', $job_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $stmt->closeCursor();
+        } catch (PDOException $e) { 
+            print "Error updating job: " . $e->getMessage(); 
+        }
+    }
 }
 
 ?>
