@@ -67,7 +67,7 @@ startValidSession();
                             <ul class="nav nav-second-level">
                                 <?php
                                 try {
-                                	$doctor_id = $_SESSION['doctor_id'][0]['id'];
+                                    $doctor_id = $_SESSION['doctor_id'];
                                 	$patients = getPatientsOf($doctor_id);
                                 	foreach($patients as $patient) {
                                 		echo '<li>';
