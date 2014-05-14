@@ -178,7 +178,7 @@ function getAverageHeartRateByMinutes($id, $minutes) {
         $total += $hr['heartrate'];
     }
 
-    return $total / sizeof($hrList);
+    return round($total / sizeof($hrList), 2);
 }
 
 function getAverageHeartRateByHours($id, $hours) {
@@ -193,7 +193,7 @@ function getAverageHeartRateByHours($id, $hours) {
         $total += $hr['heartrate'];
     }
 
-    return $total / sizeof($hrList);
+    return round($total / sizeof($hrList), 2);
 }
 
 function getCurrentHeartRateOf($patientId) {
