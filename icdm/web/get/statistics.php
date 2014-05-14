@@ -7,8 +7,6 @@ if (!isset($_GET['patient_id'])) {
 }
 else {
 	$patient_id = $_GET['patient_id'];
-
-	$average = [];
 	
 	$average['fiveMinutes'] = getAverageHeartRateByMinutes($patient_id, 5);
 	$average['fifteenMinutes'] = getAverageHeartRateByMinutes($patient_id, 15);
