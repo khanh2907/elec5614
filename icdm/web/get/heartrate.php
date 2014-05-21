@@ -7,7 +7,7 @@ if(!isset($_GET['patient_id']) || !isset($_GET['type'])) {
 }
 else {
 	if ($_GET['type'] == 'graph'){
-		$heartrates = getHeartRateHours($_GET['patient_id'], 1);
+		$heartrates = getHeartRateMinutes($_GET['patient_id'], 1);
 		echo json_encode($heartrates);
 	}
 	else if ($_GET['type'] == 'current') {
