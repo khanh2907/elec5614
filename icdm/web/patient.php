@@ -102,6 +102,7 @@ $patient_id = $_GET['id'];
         
 
             options.series[0].data = dataList;
+            options.series[0].color = "#e51414";
             var chart = new Highcharts.Chart(options);
         });
         
