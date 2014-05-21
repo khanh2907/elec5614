@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 require('../../include/sql.php');
+
 if (!isset($_POST['method'])) {
 	echo "ERROR: patient_id or method parameters are missing.";
 }
@@ -8,8 +9,20 @@ else {
 	$method = $_POST['method'];
 
 	if ($method == "new") {
-		$results = newJob(3, 'DEF', 'Heart rate is too low');
-		echo json_encode($results);
+
+		if (isset($_POST['patient_id'])) {
+			if (isset($_POST['type']) && isset($_POST['description'])) {
+				$results = newJob($_POST['patient_id'], $_POST['type'], $_POST['description']);
+				echo json_encode($results);
+			}
+			else {
+				echo "ERROR: type or description is missing.";
+			}
+			
+		}
+		else {
+			echo "ERROR: patient_id is missing.";
+		}
 	}
 	elseif ($method == "update") {
 		if (!isset($_POST['job_id'])) {

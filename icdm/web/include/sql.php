@@ -139,7 +139,7 @@ function getHeartRateOf($patientId) {
 function getHeartRateHours($patientId, $hours) {
     $db = connect();
     try {
-        $stmt = $db->prepare('SELECT heartrate FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :hours HOUR');
+        $stmt = $db->prepare('SELECT heartrate, time FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :hours HOUR');
         $stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
         $stmt->bindValue(':hours', $hours, PDO::PARAM_INT);
         $stmt->execute();
@@ -154,7 +154,7 @@ function getHeartRateHours($patientId, $hours) {
 function getHeartRateMinutes($patientId, $minutes) {
     $db = connect();
     try {
-        $stmt = $db->prepare('SELECT heartrate FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :minutes MINUTE');
+        $stmt = $db->prepare('SELECT heartrate, time FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :minutes MINUTE');
         $stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
         $stmt->bindValue(':minutes', $minutes, PDO::PARAM_INT);
         $stmt->execute();
@@ -267,6 +267,21 @@ function updateJob($job_id, $status, $description, $completed){
             print "Error updating job: " . $e->getMessage(); 
         }
     }
+}
+
+function getLatestJobs($patient_id, $limit) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT * FROM job WHERE patient_id = :patient_id ORDER BY start_time DESC LIMIT :limit_num');
+        $stmt->bindValue(':patient_id', $patient_id, PDO::PARAM_INT);
+        $stmt->bindValue(':limit_num', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting heart rate: " . $e->getMessage(); 
+    }
+    return $result;
 }
 
 ?>
