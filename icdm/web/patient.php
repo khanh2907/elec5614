@@ -95,7 +95,7 @@ $patient_id = $_GET['id'];
             var dataList = [];
 
             data.forEach(function(entry) {
-                heartrateInstance = [new Date(entry.time).getTime(), parseFloat(entry.heartrate)];
+                heartrateInstance = [new Date(entry.time + "UTC").getTime(), parseFloat(entry.heartrate)];
                 dataList.push(heartrateInstance);
             })        
 
