@@ -54,7 +54,6 @@ $patient_id = $_GET['id'];
             global: {
                 useUTC: false    
             }
-            
         })
 
         var options = {
@@ -97,9 +96,7 @@ $patient_id = $_GET['id'];
             data.forEach(function(entry) {
                 heartrateInstance = [new Date(entry.time + "UTC").getTime(), parseFloat(entry.heartrate)];
                 dataList.push(heartrateInstance);
-            })        
-
-        
+            })       
 
             options.series[0].data = dataList;
             options.series[0].color = "#e51414";
@@ -109,6 +106,9 @@ $patient_id = $_GET['id'];
         setInterval(function(){
             var dataList = [];
             $.getJSON(chartUrl, function(data) {
+
+                if (data.length == 0)
+                    return;
 
                 if (new Date(data[data.length-1].time).getTime() != options.series[0].data[options.series[0].data.length-1][0]) {
                     data.forEach(function(entry) {
@@ -138,7 +138,29 @@ $patient_id = $_GET['id'];
 
         // Statistics END
 
-
+        // Activity Log START
+        var activityUrl = <?php echo "'get/activitylog.php?method=patient&patient_id=",$patient_id, "'"; ?>;
+        setInterval(function(){
+            $.getJSON(activityUrl, function(data) {
+                if (data.length != 0) {
+                    $('.job-row').remove();
+                    data.forEach(function(job) {
+                        var jobHtml = '<tr class="job-row">';
+                        jobHtml += '<td>' + job.start_time + '</td>';
+                        if (job.end_time == null)
+                            jobHtml += '<td>' + '-' + '</td>';
+                        else
+                            jobHtml += '<td>' + job.end_time + '</td>';
+                        jobHtml += '<td>' + job.type + '</td>';
+                        jobHtml += '<td>' + job.status + '</td>';
+                        jobHtml += '<td>' + job.description + '</td>';
+                        jobHtml += '</tr>';
+                        $('#job-table').append(jobHtml);
+                    })    
+                }
+            })
+        }, 1000);
+        // Activity Log END
     });
         </script>
 
@@ -241,36 +263,11 @@ $patient_id = $_GET['id'];
                 <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-rss fa-fw"></i> Activity Log
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Heart Rate Graph
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <table class="table">
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Activity</th>
-                                    <th>Status</th>
-                                    <th>Description</th>
-                                </tr>
-                                <tr>
-                                    <td>some date</td>
-                                    <td>Emergency</td>
-                                    <td>In Progress</td>
-                                    <td>Failed to defribilate.</td>
-                                </tr>
-                                <tr>
-                                    <td>some date</td>
-                                    <td>Defribillation</td>
-                                    <td>Failed</td>
-                                    <td>Heart rate was too low. Failed to adjust heartrate.</td>
-                                </tr>
-                                <tr>
-                                    <td>some date</td>
-                                    <td>Defribillation</td>
-                                    <td>Complete</td>
-                                    <td>Heart rate was too high.</td>
-                                </tr>
-                            </table>
+                            <div id="heartrate-graph" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -298,23 +295,6 @@ $patient_id = $_GET['id'];
                     <!-- /.panel -->
                 </div>
                 <!-- /.col-lg-4 -->
-            </div>
-            <!-- /.row -->
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Heart Rate Graph
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="heartrate-graph" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    
-                </div>
-                <!-- /.col-lg-8 -->
                 <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -384,13 +364,65 @@ $patient_id = $_GET['id'];
                 <!-- /.col-lg-4 -->
             </div>
             <!-- /.row -->
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-rss fa-fw"></i> Activity Log
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table class="table" id="job-table">
+                                <tr>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Activity</th>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                </tr>
+                                <?php
+                                $latestJobs = getLatestJobs($patient_id, 10);
+                                forEach($latestJobs as $job) {
+                                    echo '<tr class="job-row">';
+                                        echo '<td>';
+                                            echo $job['start_time'];
+                                        echo '</td>';
+                                        echo '<td>';
+                                            if ($job['end_time'] == ''){
+                                                echo '-';
+                                            }
+                                            else{
+                                                echo $job['end_time'];                                                    
+                                            }
+                                        echo '</td>';
+                                        echo '<td>';
+                                            echo $job['type'];
+                                        echo '</td>';
+                                        echo '<td>';
+                                            echo $job['status'];
+                                        echo '</td>';
+                                        echo '<td>';
+                                            echo $job['description'];
+                                        echo '</td>';
+                                    echo '</tr>';
+                                }
+                                ?>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    
+                </div>
+                <!-- /.col-lg-8 -->
+                
+            </div>
+            <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
 
     </div>
     <!-- /#wrapper -->
-
-    
 
 </body>
 

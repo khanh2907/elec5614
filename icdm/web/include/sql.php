@@ -269,4 +269,19 @@ function updateJob($job_id, $status, $description, $completed){
     }
 }
 
+function getLatestJobs($patient_id, $limit) {
+    $db = connect();
+    try {
+        $stmt = $db->prepare('SELECT * FROM job WHERE patient_id = :patient_id ORDER BY start_time DESC LIMIT :limit_num');
+        $stmt->bindValue(':patient_id', $patient_id, PDO::PARAM_INT);
+        $stmt->bindValue(':limit_num', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting heart rate: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
 ?>
