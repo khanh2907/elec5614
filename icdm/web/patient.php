@@ -59,7 +59,7 @@ $patient_id = $_GET['id'];
 
         var options = {
             title: {
-                text: 'Heart Rate (24 hours)'
+                text: 'Heart Rate (in the last hour)'
             },
             chart: {
                 renderTo: 'heartrate-graph',
