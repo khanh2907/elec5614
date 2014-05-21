@@ -139,7 +139,7 @@ function getHeartRateOf($patientId) {
 function getHeartRateHours($patientId, $hours) {
     $db = connect();
     try {
-        $stmt = $db->prepare('SELECT heartrate FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :hours HOUR');
+        $stmt = $db->prepare('SELECT heartrate, time FROM heartrate WHERE patient_id = :patient_id AND time >= now() - INTERVAL :hours HOUR');
         $stmt->bindValue(':patient_id', $patientId, PDO::PARAM_INT);
         $stmt->bindValue(':hours', $hours, PDO::PARAM_INT);
         $stmt->execute();
