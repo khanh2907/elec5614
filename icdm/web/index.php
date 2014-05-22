@@ -111,7 +111,36 @@ startValidSession();
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <table class="table">
-                            	<!-- insert activity here -->
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Activity</th>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                </tr>
+                                <?php 
+                                $doctor_id = $_SESSION['doctor_id'];
+                                $jobs = getDashboardJobs($doctor_id);
+                                
+                                forEach($jobs as $job) {
+                                    echo "<tr>";
+                                    echo "<td>";
+                                    echo '<a href="';
+                                    echo 'patient.php?id=', $job['patient_id'];
+                                    echo '">'; 
+                                        echo $job['name'], ' ', $job['surname']; 
+                                    echo "</a>";
+                                    echo "</td>";
+                                    echo "<td>" , $job['start_time'] , "</td>";
+                                    echo "<td>" , $job['end_time'] , "</td>";
+                                    echo "<td>" , $job['type'] , "</td>";
+                                    echo "<td>" , $job['status'] , "</td>";
+                                    echo "<td>" , $job['description'] , "</td>";
+                                    echo "</tr>";
+                                }
+                                ?>
+
                             </table>
                         </div>
                         <!-- /.panel-body -->

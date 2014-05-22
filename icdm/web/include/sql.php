@@ -279,7 +279,22 @@ function getLatestJobs($patient_id, $limit) {
         $result = $stmt->fetchAll();
         $stmt->closeCursor();
     } catch (PDOException $e) { 
-        print "Error getting heart rate: " . $e->getMessage(); 
+        print "Error getting latest jobs: " . $e->getMessage(); 
+    }
+    return $result;
+}
+
+function getDashboardJobs($doctor_id) {
+    $db = connect();
+    // SELECT * FROM patient p RIGHT JOIN job b ON (p.id = b.patient_id) WHERE doctor_id = 1;
+    try {
+        $stmt = $db->prepare('SELECT * FROM patient p RIGHT JOIN job b ON (p.id = b.patient_id) WHERE doctor_id = :doctor_id;');
+        $stmt->bindValue(':doctor_id', $doctor_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $stmt->closeCursor();
+    } catch (PDOException $e) { 
+        print "Error getting dashboard jobs: " . $e->getMessage(); 
     }
     return $result;
 }
