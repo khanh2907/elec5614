@@ -156,7 +156,26 @@ startValidSession();
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <table class="table">
-                            	<!-- insert status table here -->
+                            	<tr>
+                                    <th>Patient</th>
+                                    <th>Average Heartrate (BPM)</th>
+                                </tr>
+                                <?php 
+                                
+                                foreach($patients as $patient) {
+                                    echo "<tr>";
+                                        echo "<td>";
+                                            echo '<a href="patient.php?id=', $patient['id'], '">';
+                                            echo $patient['name'], ' ', $patient['surname'];
+                                            echo "</a>";
+                                        echo "</td>";
+                                        
+                                        echo "<td>";
+                                            echo getAverageHeartRateByHours($patient['id'], 24);
+                                        echo "</td>";
+                                    echo "</tr>";
+                                }
+                                ?>
                             </table>
                         </div>
                         <!-- /.panel-body -->

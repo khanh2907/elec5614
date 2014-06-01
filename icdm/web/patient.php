@@ -370,6 +370,7 @@ $patient_id = $_GET['id'];
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <i class="fa fa-rss fa-fw"></i> Activity Log
+                            <a href="/activities.php?patient_id= <?php echo $patient_id; ?> ">See all</a>
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
