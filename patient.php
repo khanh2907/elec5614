@@ -147,10 +147,6 @@ $patient_id = $_GET['id'];
                     data.forEach(function(job) {
                         var jobHtml = '<tr class="job-row">';
                         jobHtml += '<td>' + job.start_time + '</td>';
-                        if (job.end_time == null)
-                            jobHtml += '<td>' + '-' + '</td>';
-                        else
-                            jobHtml += '<td>' + job.end_time + '</td>';
                         jobHtml += '<td>' + job.type + '</td>';
                         jobHtml += '<td>' + job.status + '</td>';
                         jobHtml += '<td>' + job.description + '</td>';
@@ -383,14 +379,6 @@ $patient_id = $_GET['id'];
                                     echo '<tr class="job-row">';
                                         echo '<td>';
                                             echo $job['start_time'];
-                                        echo '</td>';
-                                        echo '<td>';
-                                            if ($job['end_time'] == ''){
-                                                echo '-';
-                                            }
-                                            else{
-                                                echo $job['end_time'];                                                    
-                                            }
                                         echo '</td>';
                                         echo '<td>';
                                             echo $job['type'];
