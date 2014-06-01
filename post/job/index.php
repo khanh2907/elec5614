@@ -13,7 +13,7 @@ else {
 		if (isset($_POST['patient_id'])) {
 			if (isset($_POST['type']) && isset($_POST['description'])) {
 				$results = newJob($_POST['patient_id'], $_POST['type'], $_POST['description']);
-				echo $results['0'];
+				echo $results['0'][0];
 			}
 			else {
 				echo "ERROR: type or description is missing.";
