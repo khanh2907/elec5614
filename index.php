@@ -114,7 +114,6 @@ startValidSession();
                                 <tr>
                                     <th>Patient</th>
                                     <th>Start Time</th>
-                                    <th>End Time</th>
                                     <th>Activity</th>
                                     <th>Status</th>
                                     <th>Description</th>
@@ -133,7 +132,6 @@ startValidSession();
                                     echo "</a>";
                                     echo "</td>";
                                     echo "<td>" , $job['start_time'] , "</td>";
-                                    echo "<td>" , $job['end_time'] , "</td>";
                                     echo "<td>" , $job['type'] , "</td>";
                                     echo "<td>" , $job['status'] , "</td>";
                                     echo "<td>" , $job['description'] , "</td>";

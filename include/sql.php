@@ -288,7 +288,7 @@ function getDashboardJobs($doctor_id) {
     $db = connect();
     // SELECT * FROM patient p RIGHT JOIN job b ON (p.id = b.patient_id) WHERE doctor_id = 1;
     try {
-        $stmt = $db->prepare('SELECT * FROM patient p RIGHT JOIN job b ON (p.id = b.patient_id) WHERE doctor_id = :doctor_id;');
+        $stmt = $db->prepare('SELECT * FROM patient p RIGHT JOIN job b ON (p.id = b.patient_id) WHERE doctor_id = :doctor_id ORDER BY start_time DESC LIMIT 15');
         $stmt->bindValue(':doctor_id', $doctor_id, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetchAll();
