@@ -368,7 +368,6 @@ $patient_id = $_GET['id'];
                             <table class="table" id="job-table">
                                 <tr>
                                     <th>Start Time</th>
-                                    <th>End Time</th>
                                     <th>Activity</th>
                                     <th>Status</th>
                                     <th>Description</th>
