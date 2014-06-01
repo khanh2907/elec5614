@@ -257,7 +257,7 @@ function updateJob($job_id, $status, $description, $completed){
             print "Error updating job: " . $e->getMessage(); 
         }
     }
-    elseif ($completed) {
+    elseif ($completed == "true") {
         try {
             $stmt = $db->prepare("UPDATE job SET end_time=CURRENT_TIMESTAMP, status='COMPLETE' WHERE id=:job_id");
             $stmt->bindValue(':job_id', $job_id, PDO::PARAM_INT);
